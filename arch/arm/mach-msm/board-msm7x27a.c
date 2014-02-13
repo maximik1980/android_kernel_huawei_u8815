@@ -259,9 +259,102 @@ static struct msm_i2c_platform_data msm_gsbi1_qup_i2c_pdata = {
 #endif
 
 #endif
+#ifndef CONFIG_USB_AUTO_INSTALL
+static char *usb_functions_default[] = {
+	"diag",
+	"modem",
+	"nmea",
+	"rmnet",
+	"usb_mass_storage",
+};
+
+static char *usb_functions_default_adb[] = {
+	"diag",
+	"adb",
+	"modem",
+	"nmea",
+	"rmnet",
+	"usb_mass_storage",
+};
+
+static char *usb_functions_rndis[] = {
+	"rndis",
+};
+
+static char *usb_functions_rndis_adb[] = {
+	"rndis",
+	"adb",
+};
+
+static char *usb_functions_all[] = {
+#ifdef CONFIG_USB_ANDROID_RNDIS
+	"rndis",
+#endif
+#ifdef CONFIG_USB_ANDROID_DIAG
+	"diag",
+#endif
+	"adb",
+#ifdef CONFIG_USB_F_SERIAL
+	"modem",
+	"nmea",
+#endif
+#ifdef CONFIG_USB_ANDROID_RMNET
+	"rmnet",
+#endif
+	"usb_mass_storage",
+};
+
+static struct android_usb_product usb_products[] = {
+	{
+		.product_id 	= 0x9026,
+		.num_functions	= ARRAY_SIZE(usb_functions_default),
+		.functions 	= usb_functions_default,
+	},
+	{
+		.product_id	= 0x9025,
+		.num_functions	= ARRAY_SIZE(usb_functions_default_adb),
+		.functions	= usb_functions_default_adb,
+	},
+	{
+		.product_id	= 0xf00e,
+		.num_functions	= ARRAY_SIZE(usb_functions_rndis),
+		.functions	= usb_functions_rndis,
+	},
+	{
+		.product_id	= 0x9024,
+		.num_functions	= ARRAY_SIZE(usb_functions_rndis_adb),
+		.functions	= usb_functions_rndis_adb,
+	},
+};
+
+static struct usb_mass_storage_platform_data mass_storage_pdata = {
+	.nluns		= 1,
+	.vendor		= "Qualcomm Incorporated",
+	.product	= "Mass storage",
+	.release	= 0x0100,
+
+};
+
+static struct platform_device usb_mass_storage_device = {
+	.name		= "usb_mass_storage",
+	.id		= -1,
+	.dev		= {
+	.platform_data 	= &mass_storage_pdata,
+	},
+};
+
 
 static struct android_usb_platform_data android_usb_pdata = {
-	.update_pid_and_serial_num = usb_diag_update_pid_and_serial_num,
+	.vendor_id	= 0x05C6,
+	.product_id	= 0x9026,
+.version	= 0x0100,
+.product_name	= "Qualcomm HSUSB Device",
+.manufacturer_name = "Qualcomm Incorporated",
+.num_products = ARRAY_SIZE(usb_products),
+.products = usb_products,
+.num_functions = ARRAY_SIZE(usb_functions_all),
+.functions = usb_functions_all,
+.serial_number = "1234567890ABCDEF",
 };
 
 static struct platform_device android_usb_device = {

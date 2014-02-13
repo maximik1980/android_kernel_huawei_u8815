@@ -347,14 +347,14 @@ static struct platform_device usb_mass_storage_device = {
 static struct android_usb_platform_data android_usb_pdata = {
 	.vendor_id	= 0x05C6,
 	.product_id	= 0x9026,
-.version	= 0x0100,
-.product_name	= "Qualcomm HSUSB Device",
-.manufacturer_name = "Qualcomm Incorporated",
-.num_products = ARRAY_SIZE(usb_products),
-.products = usb_products,
-.num_functions = ARRAY_SIZE(usb_functions_all),
-.functions = usb_functions_all,
-.serial_number = "1234567890ABCDEF",
+	.version	= 0x0100,
+	.product_name	= "Qualcomm HSUSB Device",
+	.manufacturer_name = "Qualcomm Incorporated",
+	.num_products = ARRAY_SIZE(usb_products),
+	.products = usb_products,
+	.num_functions = ARRAY_SIZE(usb_functions_all),
+	.functions = usb_functions_all,
+	.serial_number = "1234567890ABCDEF",
 };
 
 static struct platform_device android_usb_device = {
@@ -364,6 +364,489 @@ static struct platform_device android_usb_device = {
 		.platform_data = &android_usb_pdata,
 	},
 };
+
+static struct platform_device android_usb_device = {
+	.name	= "android_usb",
+	.id	= -1,
+	.dev	= {
+	.platform_data = &android_usb_pdata,
+	},
+};
+
+static struct usb_ether_platform_data rndis_pdata = {
+	.vendorID	= 0x05C6,
+	.vendorDescr	= "Qualcomm Incorporated",
+};
+
+static struct platform_device rndis_device = {
+	.name	= "rndis",
+	.id	= -1,
+	.dev	= {
+	.platform_data = &rndis_pdata,
+	},
+};
+#else /* huawei usb config */
+static char *usb_functions_hw_normal_adb[] = {
+	"modem",
+	"nmea",
+	"usb_mass_storage",
+	"adb",
+	"diag",
+};
+
+static char *usb_functions_hw_normal[] = {
+	"modem",
+	"nmea",
+	"usb_mass_storage",
+};
+
+static char *usb_functions_hw_ms[] = {
+	"usb_mass_storage",
+};
+
+static char *usb_functions_google_ms[] = {
+	"usb_mass_storage",
+};
+
+static char *usb_functions_google_ms_adb[] = {
+	"usb_mass_storage",
+	"adb",	
+};
+
+static char *usb_functions_rndis[] = {
+	"rndis",
+};
+
+static char *usb_functions_rndis_adb[] = {
+	"rndis",
+	"adb",	
+};
+
+/*end of addons */
+
+
+static char *usb_functions_all[] = {	
+#ifdef CONFIG_USB_ANDROID_RNDIS
+    "rndis",
+#endif
+#ifdef CONFIG_USB_F_SERIAL
+    "modem",
+    "nmea",
+#endif
+    "usb_mass_storage",
+    "adb",
+#ifdef CONFIG_USB_ANDROID_DIAG
+    "diag",
+#endif
+#ifdef CONFIG_USB_ANDROID_RMNET
+    "rmnet",
+#endif
+#ifdef CONFIG_USB_ANDROID_ACM
+    "acm",
+#endif
+};
+
+/* nluns : 1 presents one cdrom and no udisks to support
+* nluns : 2 presents two udisks to support internal and external sdcard
+* nluns : 3 presents one cdrom and two udisks to support internal and external sdcard
+* cdrom_index : -1 presents no cdrom to support
+* cdrom_index : 0 presents one cdrom to support
+*/
+static struct android_usb_product_hw usb_products[] = {
+    {
+        .adb_product_id = PID_UDISK,
+        .adb_num_functions = ARRAY_SIZE(usb_functions_hw_ms),
+        .adb_functions = usb_functions_hw_ms,
+        .product_id = PID_UDISK,
+        .num_functions = ARRAY_SIZE(usb_functions_hw_ms),
+        .functions = usb_functions_hw_ms,
+        .nluns = 2,
+        .cdrom_index=-1,
+    },
+    {
+        .adb_product_id = PID_ONLY_CDROM,
+        .adb_num_functions = ARRAY_SIZE(usb_functions_hw_ms),
+        .adb_functions = usb_functions_hw_ms,
+        .product_id = PID_ONLY_CDROM,
+        .num_functions = ARRAY_SIZE(usb_functions_hw_ms),
+        .functions = usb_functions_hw_ms,
+        .nluns = 1,
+        .cdrom_index=0,
+    },
+    {
+        .adb_product_id = PID_AUTH,
+        .adb_num_functions = ARRAY_SIZE(usb_functions_hw_normal_adb),
+        .adb_functions = usb_functions_hw_normal_adb,
+        .product_id = PID_AUTH,
+        .num_functions = ARRAY_SIZE(usb_functions_hw_normal_adb),
+        .functions = usb_functions_hw_normal_adb,
+        .nluns = 1,
+        .cdrom_index=0,
+    },
+    {
+        .adb_product_id = PID_NORMAL,
+        .adb_num_functions = ARRAY_SIZE(usb_functions_hw_normal_adb),
+        .adb_functions = usb_functions_hw_normal_adb,
+        .product_id = PID_NORMAL,
+        .num_functions = ARRAY_SIZE(usb_functions_hw_normal),
+        .functions = usb_functions_hw_normal,
+        .nluns = 1,
+        .cdrom_index=0,
+    },
+    {
+        .adb_product_id = PID_ONLY_CDROM_TMO,
+        .adb_num_functions = ARRAY_SIZE(usb_functions_hw_ms),
+        .adb_functions = usb_functions_hw_ms,
+        .product_id = PID_ONLY_CDROM_TMO,
+        .num_functions = ARRAY_SIZE(usb_functions_hw_ms),
+        .functions = usb_functions_hw_ms,
+        .nluns = 1,
+        .cdrom_index=0,
+    },
+    {
+        .adb_product_id = PID_AUTH_TMO,
+        .adb_num_functions = ARRAY_SIZE(usb_functions_hw_normal_adb),
+        .adb_functions = usb_functions_hw_normal_adb,
+        .product_id = PID_AUTH_TMO,
+        .num_functions = ARRAY_SIZE(usb_functions_hw_normal_adb),
+        .functions = usb_functions_hw_normal_adb,
+        .nluns = 1,
+        .cdrom_index=0,
+    },
+    {
+        .adb_product_id = PID_NORMAL_TMO,
+        .adb_num_functions = ARRAY_SIZE(usb_functions_hw_normal_adb),
+        .adb_functions = usb_functions_hw_normal_adb,
+        .product_id = PID_NORMAL_TMO,
+        .num_functions = ARRAY_SIZE(usb_functions_hw_normal),
+        .functions = usb_functions_hw_normal,
+        .nluns = 1,
+        .cdrom_index=0,
+    },
+    {
+        .adb_product_id = PID_GOOGLE,
+        .adb_num_functions = ARRAY_SIZE(usb_functions_google_ms_adb),
+        .adb_functions = usb_functions_google_ms_adb,
+        .product_id = PID_GOOGLE_MS,
+        .num_functions = ARRAY_SIZE(usb_functions_google_ms),
+        .functions = usb_functions_google_ms,
+        .nluns = 3,
+        .cdrom_index=1,
+    },
+    {
+        .adb_product_id = PID_WLAN_ADB,
+        .adb_num_functions = ARRAY_SIZE(usb_functions_rndis_adb),
+        .adb_functions = usb_functions_rndis_adb,
+        .product_id = PID_WLAN,
+        .num_functions = ARRAY_SIZE(usb_functions_rndis),
+        .functions = usb_functions_rndis,
+        .nluns = 1,
+        .cdrom_index=-1,
+    },
+};
+
+/* keep usb parameters transfered from modem */
+static char product_name[MAX_NAME_LEN];
+static char vendor_name[MAX_NAME_LEN];
+static char manufacturer_name[MAX_NAME_LEN];
+#define MAX_LENS 3
+
+static struct usb_mass_storage_platform_data mass_storage_pdata = {
+.nluns	= MAX_LENS,
+.vendor = vendor_name,
+.product	= product_name,
+.release	= 0x0100,
+};
+
+static struct platform_device usb_mass_storage_device = {
+.name	= "usb_mass_storage",
+.id = -1,
+.dev	= {
+.platform_data = &mass_storage_pdata,
+},
+};
+
+static struct android_usb_platform_data android_usb_pdata = {
+.vendor_id	= HUAWEI_VID,
+.product_id	= PID_NORMAL,
+.version	= 0x0100,
+.product_name = product_name,
+.manufacturer_name = manufacturer_name,
+.num_products = ARRAY_SIZE(usb_products),
+.products = usb_products,
+.num_functions = ARRAY_SIZE(usb_functions_all),
+.functions = usb_functions_all,
+.serial_number = "1234567890ABCDEF",
+};
+
+static struct platform_device android_usb_device = {
+.name	= "android_usb",
+.id	= -1,
+.dev	= {
+.platform_data = &android_usb_pdata,
+},
+};
+
+/* ethaddr is filled by board_serialno_setup */
+static struct usb_ether_platform_data rndis_pdata = {
+.vendorID	= HUAWEI_VID,
+.vendorDescr	= manufacturer_name,
+};
+
+static struct platform_device rndis_device = {
+.name	= "rndis",
+.id	= -1,
+.dev	= {
+.platform_data = &rndis_pdata,
+},
+};
+
+/* provide a method to map pid_index to usb_pid,
+* pid_index is kept in NV(4526).
+* At power up, pid_index is read in modem and transfer to app in share memory.
+* pid_index can be modified through write file fixusb(msm_hsusb_store_fixusb).
+*/
+u16 pid_index_to_pid(u32 pid_index)
+{
+u16 usb_pid = 0xFFFF;
+
+switch(pid_index)
+{
+case CDROM_INDEX:
+case SLATE_TEST_INDEX:
+usb_pid = curr_usb_pid_ptr->cdrom_pid;
+break;
+            
+case NORM_INDEX:
+usb_pid = curr_usb_pid_ptr->norm_pid;
+break;
+            
+case AUTH_INDEX:
+usb_pid = curr_usb_pid_ptr->auth_pid;
+break;
+            
+case GOOGLE_INDEX:
+usb_pid = curr_usb_pid_ptr->google_pid;
+break;
+
+case GOOGLE_WLAN_INDEX:
+usb_pid = curr_usb_pid_ptr->wlan_pid;
+break;
+            
+/* set the USB pid to multiport when the index is 0
+* This is happened when the NV is not set or set to 0
+*/
+case ORI_INDEX:
+default:
+usb_pid = curr_usb_pid_ptr->norm_pid;
+break;
+}
+
+USB_PR("%s, pid_index=%d, usb_pid=0x%x\n", __func__, pid_index, usb_pid);
+return usb_pid;
+}
+
+void set_usb_device_name(void)
+{
+memset(manufacturer_name, 0, MAX_NAME_LEN);
+memset(product_name, 0, MAX_NAME_LEN);
+memset(vendor_name, 0, MAX_NAME_LEN);
+
+strcpy(manufacturer_name, "Huawei Incorporated");
+strcpy(product_name, "Android Adapter");
+}
+
+/*
+* Set usb serial number according to pid.
+*/
+void set_usb_pid_sn(u32 pid_index)
+{
+switch(pid_index)
+{
+case GOOGLE_WLAN_INDEX:
+USB_PR("set pid=0x%x, sn=NULL\n", GOOGLE_WLAN_INDEX);
+android_set_product_id(PID_WLAN);
+set_usb_sn(NULL);
+break;
+            
+case GOOGLE_INDEX:
+USB_PR("set pid=0x%x, sn=%s\n", PID_GOOGLE_MS, usb_para_data.usb_para.usb_serial);
+android_set_product_id(PID_GOOGLE_MS);
+set_usb_sn(usb_para_data.usb_para.usb_serial);
+break;
+
+case NORM_INDEX:
+USB_PR("set pid=0x%x, sn=%s\n", curr_usb_pid_ptr->norm_pid, USB_SN_STRING);
+android_set_product_id(curr_usb_pid_ptr->norm_pid);
+set_usb_sn(USB_SN_STRING);
+break;
+            
+case SLATE_TEST_INDEX:
+case CDROM_INDEX:
+USB_PR("set pid=0x%x, sn=%s\n", curr_usb_pid_ptr->cdrom_pid, "");
+android_set_product_id(curr_usb_pid_ptr->cdrom_pid);
+set_usb_sn(NULL);
+break;
+
+case ORI_INDEX:
+USB_PR("set pid=0x%x, sn=%s\n", curr_usb_pid_ptr->norm_pid, "");
+android_set_product_id(curr_usb_pid_ptr->norm_pid);
+set_usb_sn(NULL);
+break;
+
+case AUTH_INDEX:
+USB_PR("set pid=0x%x, sn=%s\n", curr_usb_pid_ptr->auth_pid, "");
+android_set_product_id(curr_usb_pid_ptr->auth_pid);
+set_usb_sn(NULL);
+break;
+
+default:
+USB_PR("set pid=0x%x, sn=%s\n", curr_usb_pid_ptr->norm_pid, "");
+android_set_product_id(curr_usb_pid_ptr->norm_pid);
+set_usb_sn(NULL);
+break;
+}
+}
+
+/*
+* Get usb parameter from share memory and set usb serial number accordingly.
+*/
+static void proc_usb_para(void)
+{
+smem_huawei_vender *usb_para_ptr;
+char *vender_name="t-mobile";
+
+USB_PR("%s\n", __func__);
+
+/* initialize */
+usb_para_info.usb_pid_index = 0;
+usb_para_info.usb_pid = PID_NORMAL;
+
+set_usb_device_name();
+
+/* now the smem_id_vendor0 smem id is a new struct */
+usb_para_ptr = (smem_huawei_vender*)smem_alloc(SMEM_ID_VENDOR0, sizeof(smem_huawei_vender));
+if (!usb_para_ptr)
+{
+USB_PR("%s: Can't find usb parameter\n", __func__);
+return;
+}
+
+USB_PR("vendor:%s,country:%s\n", usb_para_ptr->vender_para.vender_name,
+            usb_para_ptr->vender_para.country_name);
+
+memcpy(&usb_para_data, usb_para_ptr, sizeof(smem_huawei_vender));
+
+/* decide usb pid array according to the vender name */
+if(!memcmp(usb_para_ptr->vender_para.vender_name, vender_name, strlen(vender_name)))
+{
+curr_usb_pid_ptr = &usb_pid_array[1];
+USB_PR("USB setting is TMO\n");
+}
+else
+{
+curr_usb_pid_ptr = &usb_pid_array[0];
+USB_PR("USB setting is NORMAL\n");
+}
+
+USB_PR("smem usb_serial=%s, usb_pid_index=%d\n", usb_para_ptr->usb_para.usb_serial,
+            usb_para_ptr->usb_para.usb_pid_index);
+
+/* when manufacture, we need to use the diag. so if the usb_serial is null
+* and the nv value is google index, we set the ports to normal.
+*/
+if (0 == usb_para_data.usb_para.usb_serial[0]
+&& GOOGLE_INDEX == usb_para_ptr->usb_para.usb_pid_index)
+{
+USB_PR("%s usb serial number is null in google mode. so switch to original mode\n", __func__);
+usb_para_ptr->usb_para.usb_pid_index = ORI_INDEX;
+}
+
+usb_para_info.usb_pid_index = usb_para_ptr->usb_para.usb_pid_index;
+
+usb_para_info.usb_pid = pid_index_to_pid(usb_para_ptr->usb_para.usb_pid_index);
+
+/* add new pid config for google */
+set_usb_pid_sn(usb_para_info.usb_pid_index);
+
+    /* the vendor emobile in japan doesn't need the cdrom */
+    if ((0 == memcmp(usb_para_data.vender_para.vender_name, VENDOR_EMOBILE, strlen(VENDOR_EMOBILE)))
+        && (0 == memcmp(usb_para_data.vender_para.country_name, COUNTRY_JAPAN, strlen(COUNTRY_JAPAN))))
+    {
+        u16 index = 0;
+        /* find the google mode from the products array */
+        for (; index < android_usb_pdata.num_products; index++)
+        {
+            if (PID_GOOGLE == android_usb_pdata.products[index].adb_product_id)
+            {
+                /* set the nluns to 2 from 3, del the cdrom */
+                android_usb_pdata.products[index].nluns = 2; /* 2 is two udisk */
+                android_usb_pdata.products[index].cdrom_index = -1; /* -1 is not support cdrom */
+                USB_PR("%s %s%s doesn't need the cdrom. nluns=%d, cdrom_index=%d\n",
+                        __func__, usb_para_data.vender_para.country_name, usb_para_data.vender_para.vender_name,
+                        android_usb_pdata.products[index].nluns, android_usb_pdata.products[index].cdrom_index);
+            }
+        }
+    }
+
+    /* M866 doesn't need usb tehter fucntion */
+    if ((0 == memcmp(usb_para_data.vender_para.vender_name, VENDOR_TRACFONE, strlen(VENDOR_TRACFONE)))
+       && (0 == memcmp(usb_para_data.vender_para.country_name, COUNTRY_US, strlen(COUNTRY_US)))
+       && machine_is_msm7x27a_C8655_NAND())
+       
+    {
+        u16 index = 0;
+        /* find the tether mode from the products array */
+        for (; index < android_usb_pdata.num_products; index++)
+        {
+            if (PID_WLAN == android_usb_pdata.products[index].product_id)
+            {
+                /* use ineffective pid to take the place of tether pid*/
+                android_usb_pdata.products[index].adb_product_id = PID_NONE;
+                android_usb_pdata.products[index].product_id = PID_NONE;
+                USB_PR("%s %s %s H866C doesn't need tether. Tether pid is replaced by 0x%x\n",
+                        __func__, usb_para_data.vender_para.country_name, usb_para_data.vender_para.vender_name,
+                        android_usb_pdata.products[index].product_id);
+            }
+        }
+    }
+USB_PR("curr_usb_pid_ptr: 0x%x, 0x%x, 0x%x, 0x%x, 0x%x\n",
+curr_usb_pid_ptr->cdrom_pid,
+curr_usb_pid_ptr->norm_pid,
+curr_usb_pid_ptr->udisk_pid,
+curr_usb_pid_ptr->auth_pid,
+curr_usb_pid_ptr->google_pid);
+USB_PR("usb_para_info: usb_pid_index=%d, usb_pid = 0x%x\n",
+usb_para_info.usb_pid_index,
+usb_para_info.usb_pid);
+}
+#endif /* CONFIG_USB_AUTO_INSTALL */
+
+/*ended edited */
+
+static int __init board_serialno_setup(char *serialno)
+{
+	int i;
+	char *src = serialno;
+
+	/* create a fake MAC address from our serial number.
+	* first byte is 0x02 to signify locally administered.
+	*/
+	rndis_pdata.ethaddr[0] = 0x02;
+	for (i = 0; *src; i++) {
+		/* XOR the USB serial across the remaining bytes */
+		rndis_pdata.ethaddr[i % (ETH_ALEN - 1) + 1] ^= *src++;
+	}
+
+	/* usb serial number is set to bt address */
+#ifndef CONFIG_HUAWEI_KERNEL
+	android_usb_pdata.serial_number = serialno;
+#endif
+	return 1;
+}
+__setup("androidboot.serialno=", board_serialno_setup);
+
+/*end of addons-2 */
 
 #ifdef CONFIG_USB_EHCI_MSM_72K
 static void msm_hsusb_vbus_power(unsigned phy_info, int on)
